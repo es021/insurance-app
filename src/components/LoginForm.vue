@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { AppName } from '../config/app-config';
+import { AppName } from '../../config/app-config';
 import { mapActions, mapGetters, mapMutations } from "vuex";
 
 export default {

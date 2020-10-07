@@ -13,6 +13,7 @@ requireComponent.keys().forEach(fileName => {
     camelCase(fileName.replace(/^\.\//, '').replace(/\.\w+$/, ''))
   )
 
-  // console.log(componentName);
+  console.log(componentName);
   Vue.component(componentName, componentConfig.default || componentConfig)
 })
+//DashViews

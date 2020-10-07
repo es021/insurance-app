@@ -80,7 +80,7 @@ export default {
         text: 'Dashboard'
       },
       {
-        to: '/dashboard/user-profile',
+        to: '/dashboard/my-profile',
         icon: 'mdi-account',
         text: 'My Profile'
       },

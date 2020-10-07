@@ -69,7 +69,7 @@
         <router-link
           v-ripple
           class="toolbar-items"
-          to="/dashboard/user-profile"
+          to="/dashboard/my-profile"
         >
           <v-icon color>mdi-account</v-icon>
         </router-link>
@@ -85,7 +85,7 @@
 <script>
 import { mapMutations, mapGetters, mapActions } from "vuex";
 import router from "@/router";
-import { AppName } from "../../config/app-config";
+import { AppName } from "../../../config/app-config";
 
 export default {
   data: () => ({

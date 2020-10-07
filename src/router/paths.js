@@ -48,7 +48,7 @@ export default [
       {
         path: '',
         name: 'Dashboard',
-        component: () => import(`@/components/DashViews/Dashboard.vue`)
+        component: () => import(`@/components/View/Dashboard.vue`)
       },
       {
         path: 'my-profile',
@@ -56,7 +56,7 @@ export default [
           name: 'My Profile',
           requiresAuth: true
         },
-        component: () => import(`@/components/DashViews/UserProfile.vue`)
+        component: () => import(`@/components/View/UserProfile.vue`)
       },
       {
         path: 'clients',
@@ -64,7 +64,7 @@ export default [
           name: 'Clients',
           requiresAuth: true
         },
-        component: () => import(`@/components/DashViews/ClientList.vue`)
+        component: () => import(`@/components/View/ClientList.vue`)
       },
       {
         path: 'table-list',
@@ -72,7 +72,7 @@ export default [
           name: 'Table List',
           requiresAuth: true
         },
-        component: () => import(`@/components/DashViews/SimpleTables.vue`)
+        component: () => import(`@/components/View/SimpleTables.vue`)
       },
       {
         path: 'user-tables',
@@ -80,7 +80,7 @@ export default [
           name: 'User Table',
           requiresAuth: true
         },
-        component: () => import(`@/components/DashViews/UsersTable.vue`)
+        component: () => import(`@/components/View/UsersTable.vue`)
       },
       {
         path: 'tablestest',
@@ -88,7 +88,7 @@ export default [
           name: 'Complex Tables test',
           requiresAuth: true
         },
-        component: () => import(`@/components/DashViews/TableList.vue`)
+        component: () => import(`@/components/View/TableList.vue`)
       },
       {
         path: 'typography',
@@ -96,7 +96,7 @@ export default [
           name: 'Typography',
           requiresAuth: true
         },
-        component: () => import(`@/components/DashViews/Typography.vue`)
+        component: () => import(`@/components/View/Typography.vue`)
       },
       {
         path: 'icons',
@@ -104,7 +104,7 @@ export default [
           name: 'Icons',
           requiresAuth: true
         },
-        component: () => import(`@/components/DashViews/Icons.vue`)
+        component: () => import(`@/components/View/Icons.vue`)
       },
       {
         path: 'maps',
@@ -112,7 +112,7 @@ export default [
           name: 'Maps',
           requiresAuth: true
         },
-        component: () => import(`@/components/DashViews/Maps.vue`)
+        component: () => import(`@/components/View/Maps.vue`)
       },
       {
         path: 'notifications',
@@ -120,7 +120,19 @@ export default [
           name: 'Notifications',
           requiresAuth: true
         },
-        component: () => import(`@/components/DashViews/Notifications.vue`)
+        component: () => import(`@/components/View/Notifications.vue`)
+      },
+
+      // ######################################################################################
+      // ######################################################################################
+      // ROUTE ONLY
+      {
+        path: 'client/:id',
+        meta: {
+          name: 'Client Profile',
+          requiresAuth: true
+        },
+        component: () => import(`@/components/View/ClientView.vue`)
       }
     ]
   }
