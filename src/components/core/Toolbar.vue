@@ -66,11 +66,7 @@
             </v-list>
           </v-card>
         </v-menu>
-        <router-link
-          v-ripple
-          class="toolbar-items"
-          to="/dashboard/my-profile"
-        >
+        <router-link v-ripple class="toolbar-items" to="/dashboard/my-profile">
           <v-icon color>mdi-account</v-icon>
         </router-link>
 
@@ -83,9 +79,10 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapActions } from "vuex";
 import router from "@/router";
 import { AppName } from "../../../config/app-config";
+import { globalMethod } from "../../../helper/app-helper";
+import AuthHelper from '../../../helper/auth-helper';
 
 export default {
   data: () => ({
@@ -97,7 +94,7 @@ export default {
   }),
 
   computed: {
-    ...mapGetters("auth", ["authorized"]),
+    // ...mapGetters("auth", ["authorized"]),
   },
 
   watch: {
@@ -115,16 +112,15 @@ export default {
   },
 
   methods: {
+    ...globalMethod(),
     onKeyPressSearch(e) {
       if (e.key == "Enter") {
         // @SEARCH_FEATURE
         console.log("start Search", this.searchInput);
       }
     },
-    ...mapMutations("app", ["setDrawer", "toggleDrawer"]),
-    ...mapActions("auth", ["logout"]),
     onClickBtn() {
-      this.setDrawer(!this.$store.state.app.drawer);
+      this.APP_setDrawer(!this.$store.state.app.drawer);
     },
     onClick() {
       //
@@ -139,7 +135,7 @@ export default {
       }
     },
     logoutOnClick: function () {
-      this.logout();
+      AuthHelper.logout();
     },
   },
 };

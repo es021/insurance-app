@@ -1,7 +1,5 @@
 <template>
-  <v-app
-    id="dashboard-view"
-    dark>
+  <v-app id="dashboard-view" dark>
     <core-toolbar />
     <core-drawer />
     <v-content>
@@ -9,23 +7,21 @@
         <router-view />
       </v-fade-transition>
     </v-content>
-
     <core-footer v-if="$route.meta.name !== 'Maps'" />
-
   </v-app>
 </template>
 
 <script>
+import { windowTitle } from '../../helper/app-helper'
 export default {
   name: 'DashboardView',
   metaInfo () {
     return {
-      title: 'Vuetify Admin Dashboard by ClintOxx'
+      title: windowTitle('Dashboard')
     }
   }
 }
 </script>
 
 <style>
-
 </style>

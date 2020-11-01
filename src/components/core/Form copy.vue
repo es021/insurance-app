@@ -1,45 +1,36 @@
 <template>
-  <v-layout row class="ma-1">
-    <v-dialog v-model="show" persistent max-width="600px">
-      <template v-slot:activator="{ on }">
-        <v-btn outline color="white" v-on="on">
-          <v-icon left dark>{{ iconButton }}</v-icon>
-          {{ textButton }}
-        </v-btn>
-      </template>
-      <v-card>
-        <v-card-title>
-          <span class="headline">{{ textTitle }}</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container grid-list-md>
-            <CoreForm
-              :error="error"
-              :data="data"
-              :item="item"
-              @on-init="onFormInit"
-            />
-          </v-container>
-        </v-card-text>
-        <v-card-actions class="pb-4">
-          <v-spacer />
-          <v-btn color="blue darken-1" flat @click="onClickCancel">{{
-            textCancel
-          }}</v-btn>
-          <v-btn color="blue darken-1" @click="onClickSubmit">{{
-            textSave
-          }}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-layout>
+  <form>
+    <v-layout wrap>
+      <v-flex v-for="d of item" :key="d.key" :class="d.flex">
+        <v-textarea
+          v-if="d.type == 'textarea'"
+          :label="`${d.label} ${d.required ? '*' : ''}`"
+          :name="d.key"
+          :required="d.required"
+          :type="d.type"
+          v-model="form[d.key]"
+        ></v-textarea>
+        <v-text-field
+          v-else
+          :label="`${d.label} ${d.required ? '*' : ''}`"
+          :name="d.key"
+          :required="d.required"
+          :type="d.type"
+          v-model="form[d.key]"
+        ></v-text-field>
+      </v-flex>
+      <v-flex xs12>
+        <v-spacer class="mt-4" />
+        <small
+          ><i>{{ ps }}</i></small
+        >
+      </v-flex>
+    </v-layout>
+  </form>
 </template>
 <script>
-import * as FormHelper from "../../../helper/form-helper";
 export default {
   props: {
-    data: { type: Object, default: {} },
-    type: { type: String, default: "dialog" },
     iconButton: { type: String },
     textButton: { type: String },
     textTitle: { type: String },
@@ -47,41 +38,24 @@ export default {
     textCancel: { type: String, default: "Cancel" },
     ps: { type: String },
     item: { type: Array },
-    isDone: { type: Boolean, default: false },
   },
   data: () => ({
-    formElement: null,
-    // formData: {},
+    form: {},
     show: false,
-    error: null,
   }),
-  watch: {
-    isDone(val) {
-      if (val === true) {
-        this.show = false;
-      }
-    },
+  mounted() {
+    this.$emit("onInit", this.$refs.formElement);
   },
   methods: {
-    onFormInit(formElement) {
-      this.formElement = formElement;
-    },
     onClickCancel() {
       this.show = false;
     },
     onClickSubmit() {
-      let error = FormHelper.checkError(
-        this,
-        this.formElement,
-        this.item,
-        this.data
-      );
-      if (error) {
-        this.error = error;
-      } else {
-        this.error = null;
-        let data = FormHelper.fix(this.item, this.data);
-        this.$emit("on-submit", data);
+      var formElement = this.$refs.formElement;
+      var isValid = formElement.reportValidity();
+      if (isValid) {
+        let data = JSON.parse(JSON.stringify(this.form));
+        this.$emit("onSubmit", data);
       }
     },
   },

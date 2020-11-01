@@ -64,11 +64,7 @@
 </template>
 
 <script>
-// Utilities
-import {
-  mapMutations,
-  mapState
-} from 'vuex'
+import { globalComputed, globalMethod } from '../../../helper/app-helper'
 
 export default {
   data: () => ({
@@ -123,13 +119,13 @@ export default {
     responsive: false
   }),
   computed: {
-    ...mapState('app', ['image', 'color']),
+    ...globalComputed(),
     inputValue: {
       get () {
         return this.$store.state.app.drawer
       },
       set (val) {
-        this.setDrawer(val)
+        this.APP_setDrawer(val)
       }
     },
     items () {
@@ -144,7 +140,7 @@ export default {
     window.removeEventListener('resize', this.onResponsiveInverted)
   },
   methods: {
-    ...mapMutations('app', ['setDrawer', 'toggleDrawer']),
+    ...globalMethod(),
     onResponsiveInverted () {
       if (window.innerWidth < 991) {
         this.responsive = true

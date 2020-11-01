@@ -22,7 +22,6 @@ import 'vuetify/dist/vuetify.min.css'
 import '@mdi/font/css/materialdesignicons.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import axios from 'axios'
-import { auth } from '@/firebase/firebase'
 
 console.log("hello");
 
@@ -57,14 +56,22 @@ Vue.config.productionTip = false
 //   render: h => h(App)
 // }).$mount('#app')
 
-let app
-auth.onAuthStateChanged(() => {
-  if (!app) {
-    app = new Vue({
-      i18n,
-      router,
-      store,
-      render: h => h(App)
-    }).$mount('#app')
-  }
-});
+// let app
+// auth.onAuthStateChanged(() => {
+//   if (!app) {
+//     app = new Vue({
+//       i18n,
+//       router,
+//       store,
+//       render: h => h(App)
+//     }).$mount('#app')
+//   }
+// });
+
+
+let app = new Vue({
+  i18n,
+  router,
+  store,
+  render: h => h(App)
+}).$mount('#app')

@@ -13,9 +13,9 @@
             <v-card-text>
               <v-form>
                 <v-text-field
-                  ref="username"
-                  v-model="username"
-                  :rules="[() => !!username || 'This field is required']"
+                  ref="email"
+                  v-model="email"
+                  :rules="[() => !!email || 'This field is required']"
                   prepend-icon="mdi-account"
                   label="Email"
                   placeholder="john.doe@gmail.com"
@@ -60,15 +60,16 @@
 </template>
 
 <script>
-import { AppName } from '../../config/app-config';
-import { mapActions, mapGetters, mapMutations } from "vuex";
+import { AppName } from "../../config/app-config";
+import { globalMethod, windowTitle } from "../../helper/app-helper";
+import AuthHelper from '../../helper/auth-helper';
 
 export default {
   data: function () {
     return {
-      AppName : AppName,
+      AppName: AppName,
       DEFAULT_ERROR_MESSAGE: "Incorrect login info",
-      username: "",
+      email: "",
       password: "",
       errorMessages: "",
       showSnackbar: false,
@@ -79,29 +80,22 @@ export default {
     this.errorMessages = this.DEFAULT_ERROR_MESSAGE;
   },
   methods: {
-    ...mapMutations("block-loader", ["BL_show", "BL_hide"]),
-    ...mapActions("auth", ["login"]),
-    loginOnClick: function () {
+    ...globalMethod(),
+    loginOnClick() {
       this.BL_show();
-      let username = this.username;
+      let email = this.email;
       let password = this.password;
-      this.login({ username, password })
-        .then(() => {
+      AuthHelper.login({ email, password })
+        .then((data) => {
           this.BL_hide();
+          console.log(data);
         })
         .catch((err) => {
           this.BL_hide();
-          if (err.message) {
-            this.errorMessages = err.message;
-          }
+          this.errorMessages = err;
           this.showSnackbar = true;
         });
     },
-  },
-  metaInfo() {
-    return {
-      title: "Super Secret | Login",
-    };
   },
 };
 </script>

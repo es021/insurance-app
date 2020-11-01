@@ -1,5 +1,6 @@
+import AuthHelper from "../../helper/auth-helper";
+
 // import store from '../store'
-import { auth } from '@/firebase/firebase'
 export default [
   {
     path: '*',
@@ -22,8 +23,7 @@ export default [
     // redirect if already signed in
     beforeEnter: (to, from, next) => {
       // if (store.getters.authorized) {
-      // console.log("auth.currentUser", auth.currentUser)
-      if (auth.currentUser) {
+      if (AuthHelper.isLoggedIn()) {
         next('/dashboard')
       } else {
         next()
@@ -133,7 +133,15 @@ export default [
           requiresAuth: true
         },
         component: () => import(`@/components/View/ClientView.vue`)
-      }
+      },
+      {
+        path: 'not-ready',
+        meta: {
+          name: 'Page Not Ready',
+          requiresAuth: true
+        },
+        component: () => import(`@/components/View/NotReady.vue`)
+      },
     ]
   }
 ]

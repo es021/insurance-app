@@ -1,6 +1,7 @@
 <template>
   <div>
     <CoreBlockLoader />
+    <CoreSnackBar />
     <transition mode="out-in">
       <router-view />
     </transition>

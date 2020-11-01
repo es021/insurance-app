@@ -11,11 +11,9 @@
 import Vue from 'vue'
 import VueAnalytics from 'vue-analytics'
 import Router from 'vue-router'
-import store from '../store'
 import Meta from 'vue-meta'
-import { auth } from '@/firebase/firebase'
-// Routes
 import paths from './paths'
+import AuthHelper from '../../helper/auth-helper'
 
 Vue.use(Router)
 
@@ -25,7 +23,7 @@ const router = new Router({
   mode: 'history',
   routes: paths,
 
-  scrollBehavior (to, from, savedPosition) {
+  scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition
     }
@@ -41,7 +39,7 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     // if (store.getters.authorized) {
-    if (auth.currentUser) {
+    if (AuthHelper.isLoggedIn()) {
       next()
       return
     }

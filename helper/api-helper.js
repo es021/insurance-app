@@ -1,9 +1,12 @@
+import AuthHelper from './auth-helper';
+
 const axios = require('axios');
 const {
     ServerRoot,
 } = require('../config/app-config');
 const graphQLUrl = ServerRoot + "/graphql?";
 const obj2arg = require("graphql-obj2arg");
+const Secret = require('../server/secret/secret');
 
 const getGraphQlErrorMes = (rawMes) => {
     let mes = "";
@@ -64,8 +67,7 @@ axios.interceptors.response.use(response => {
 }, error => {
     var retErr = null;
     try {
-        // error in query -- getAxiosGraphQLQuery
-
+        // error in query -- getRequestGraphQLQuery
         if (error.response.config.url == graphQLUrl) {
             //error.response["data"] = `[GraphQL Error] ${error.response.data.errors[0].message}`;
             let q = null;
@@ -95,26 +97,67 @@ axios.interceptors.response.use(response => {
     return Promise.reject(error);
 });
 
-function graphqlQuery(table, { field, any, page, offset, order_by, is_count }) {
+export function graphqlInsert(table, mainParam) {
+    return graphqlMutation(table, "insert", mainParam)
+}
+
+export function graphqlUpdate(table, mainParam) {
+    return graphqlMutation(table, "update", mainParam)
+}
+
+export function graphqlDelete(table, mainParam) {
+    return graphqlMutation(table, "delete", mainParam)
+}
+
+export function graphqlMutation(table, action, { param, field, is_server } /* <= this is mainParam */) {
     // create param
-    let param = {};
+    let paramObj = {};
+    if (param) {
+        paramObj = { ...param }
+    }
+
+    let paramStr = obj2arg(paramObj, { noOuterBraces: true });
+    if (paramStr) {
+        paramStr = `( ${paramStr} )`;
+    }
+
+    // create query
+    let entity = `${action}_${table}`
+    let query = `mutation { ${entity} ${paramStr} 
+    { ${field.join(" ")} } }`
+
+    return graphql(query, is_server).then((res) => {
+        let d = res.data.data[entity];
+        let debug = JSON.parse(JSON.stringify(d))
+        console.log(debug);
+        return d;
+    });
+}
+
+export function graphqlQuery(table, { is_server, param, field, any, page, offset, order_by, is_count }) {
+    // create param
+    let paramObj = {};
     if (is_count) {
-        param = {
+        paramObj = {
             _is_count: is_count
         };
         field = ["_count"]
     } else {
-        param = {
+        paramObj = {
             _page: page,
             _offset: offset,
             _order_by: order_by,
         };
     }
 
+    if (param) {
+        paramObj = { ...param }
+    }
+
     // global
-    param._any = any;
-    
-    let paramStr = obj2arg(param, { noOuterBraces: true });
+    paramObj._any = any;
+
+    let paramStr = obj2arg(paramObj, { noOuterBraces: true });
     if (paramStr) {
         paramStr = `( ${paramStr} )`;
     }
@@ -125,33 +168,48 @@ function graphqlQuery(table, { field, any, page, offset, order_by, is_count }) {
     ${paramStr} 
     { ${field.join(" ")} }}`
     console.log(query)
-    return graphql(query).then((res) => {
+    return graphql(query, is_server).then((res) => {
         let d = res.data.data[table];
         let debug = JSON.parse(JSON.stringify(d))
         if (is_count) {
-            d = d[0]._count;
+            try {
+                d = d[0]._count;
+            } catch (err) {
+                d = 0;
+            }
             debug = d;
         }
-        console.log(debug);
+        console.log(query, debug);
         return d;
     });
 }
 
-function graphql(query) {
-    var config = {
+export function graphql(query, is_server) {
+    var config, param, token, uuid;
+
+    if (is_server) {
+        token = Secret.SERVER_REQUEST_TOKEN;
+        uuid = Secret.SERVER_REQUEST_UUID;
+    } else {
+        token = AuthHelper.token();
+        uuid = AuthHelper.ID();
+    }
+
+    config = {
         headers: {
             'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiMSIsImlhdCI6MTU4MDgwMzU0Nn0.7Xg49C_W11kxYmGRglX_6w5jJ01CBHcTvu3WkF2BNgc'
+            'Authorization': `Bearer ${token}`
         },
         proxy: false,
     };
-    return axios.post(graphQLUrl, {
-        uuid: 1,
+    param = {
+        uuid: uuid,
         query: query
-    }, config);
+    }
+    return axios.post(graphQLUrl, param, config);
 }
 
-function graphqlAttr(...dbConfigArr) {
+export function graphqlAttr(...dbConfigArr) {
     let r = "";
     for (var conf of dbConfigArr) {
         for (var k in conf) {
@@ -166,50 +224,24 @@ function graphqlAttr(...dbConfigArr) {
     return r;
 }
 
-function getAxios(requestUrl, params, headers) {
+export function getRequest({ root = ServerRoot, url, param, header }) {
     // return axios.get(requestUrl, JSON.stringify(params), config);
+
     return axios({
         method: 'get',
-        params: params,
-        headers: headers,
+        params: param,
+        headers: header,
         proxy: false,
-        url: requestUrl
+        url: root + url
     })
 }
 
-function postAxios(requestUrl, params, headers) {
+export function postRequest({ root = ServerRoot, url, param, header }) {
     var config = {
         proxy: false
     };
-
-    if (typeof headers !== "undefined") {
-        config.headers = headers;
+    if (typeof header !== "undefined") {
+        config.headers = header;
     }
-
-    return axios.post(requestUrl, JSON.stringify(params), config);
+    return axios.post(root + url, param, config);
 }
-
-function deleteAxios(requestUrl, headers) {
-    var config = {
-        proxy: false
-    };
-
-    if (typeof headers !== "undefined") {
-        config.headers = headers;
-    }
-
-    return axios.delete(requestUrl, config);
-}
-
-
-
-//Export functions 
-module.exports = {
-    // graphqlCount,
-    graphqlAttr,
-    graphqlQuery,
-    graphql,
-    deleteAxios,
-    postAxios,
-    getAxios
-};

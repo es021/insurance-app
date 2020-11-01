@@ -9,6 +9,11 @@ const jwt = require('jsonwebtoken');
 
 function isSkipAuthJwtVerify(req, { PORT, GRAPHQL_PATH }) {
     let skipVerify = [`http://localhost:${PORT}${GRAPHQL_PATH}`]
+
+    let url = req.url;
+    if (url.indexOf("/auth/") >= 0) {
+        return true;
+    }
     if (skipVerify.indexOf(req.headers.referer) >= 0) {
         return true;
     }
@@ -45,8 +50,7 @@ function jwtAuthentication(param) {
                 if (payload && payload.uuid == req.body.uuid) {
                     next()
                 } else {
-                    // console.log("--------------------------------------------------------")
-                    // console.log(req.headers.referer)
+         
                     next(new Error(`Invalid Token (uuid : ${req.body.uuid})`));
                 }
 

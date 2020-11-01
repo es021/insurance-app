@@ -6,20 +6,30 @@
     :textSave="textSave"
     :textCancel="textCancel"
     :ps="ps"
-    :item="item"
+    :isDone="isDone"
+    :item="formItem"
+    :data="formData"
+    @on-submit="onSubmit"
   ></CoreFormDialog>
 </template>
 <script>
+import { graphqlInsert } from "../../../helper/api-helper";
+import { globalMethod } from "../../../helper/app-helper";
+import Client from "../../../model/Client";
 export default {
-  props: {},
+  props: {
+    agentId: { type: Number },
+  },
   data: () => ({
+    isDone: false,
     iconButton: "mdi-account-plus",
     textButton: "Add New Client",
     textTitle: "New Client",
     textSave: "Create",
     textCancel: "Cancel",
     ps: "** More information can be added later **",
-    item: [
+    formData: {},
+    formItem: [
       {
         flex: "xs12 sm6",
         key: "first_name",
@@ -61,6 +71,26 @@ export default {
       // },
     ],
   }),
-  methods: {},
+  methods: {
+    ...globalMethod(),
+    onSubmit(data) {
+      data["agent_id"] = this.agentId;
+      // empty the data
+      // this.formData = {};
+      console.log("Data", data);
+
+      return graphqlInsert(Client.Table, {
+        field: ["ID"],
+        param: data,
+      }).then((data) => {
+        this.data = data;
+        this.SB_success("New client created");
+        // window.reload();
+        // empty the data
+        this.isDone = true;
+        this.$emit("on-done");
+      });
+    },
+  },
 };
 </script>

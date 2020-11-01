@@ -1,55 +1,46 @@
 <template>
-  <v-container fill-height fluid grid-list-xl>
-    <v-layout justify-center wrap>
-      <v-flex md12>
-        <div>
-          <!-- <material-card :color="color" :title="title" :text="subtitle"> -->
-          <material-card :color="color">
-            <template #header>
-              <h1 class="heading-1 font-weight-bold mb-2" v-text="title" />
-              <slot name="addNew"></slot>
-            </template>
-            <v-layout row wrap>
-              <v-flex xs12 sm9 lg10>
-                <v-text-field
-                  v-model="searchInput"
-                  :label="textSearch"
-                  single-line
-                  hide-details
-                  @keypress="onKeypressSearchInput"
-                />
-              </v-flex>
-              <v-flex xs12 sm3 lg2 class="align-self-end">
-                <v-btn
-                  block
-                  color="success"
-                  dark
-                  class="my-0 font-weight-bold"
-                  @click="onClickSearchButton"
-                >
-                  <v-icon left dark>mdi-magnify</v-icon>
-                  Search
-                </v-btn>
-              </v-flex>
-            </v-layout>
-            <v-spacer class="mt-3" />
-            <CorePaging
-              :hideTop="this.offset < 10"
-              :totalPage="totalPage"
-              @onPageChange="onPageChange"
-            >
-              <slot name="table"></slot>
-            </CorePaging>
-            <v-spacer class="mt-4" />
-          </material-card>
-        </div>
+  <material-card :color="color">
+    <template #header>
+      <h2 class="heading-2 font-weight-bold mb-2" v-text="title" />
+      <slot name="addNew"></slot>
+    </template>
+    <v-layout row wrap>
+      <v-flex xs12 sm9 lg9>
+        <v-text-field
+          v-model="searchInput"
+          :label="textSearch"
+          single-line
+          hide-details
+          @keypress="onKeypressSearchInput"
+        />
+      </v-flex>
+      <v-flex xs12 sm3 class="align-self-end">
+        <v-btn
+          block
+          color="success"
+          dark
+          class="my-0 font-weight-bold"
+          @click="onClickSearchButton"
+        >
+          <v-icon left dark>mdi-magnify</v-icon>
+          Search
+        </v-btn>
       </v-flex>
     </v-layout>
-  </v-container>
+    <v-spacer class="mt-3" />
+    <CorePaging
+      :hideTop="this.offset < 10"
+      :totalPage="totalPage"
+      @onPageChange="onPageChange"
+    >
+      <slot name="table"></slot>
+    </CorePaging>
+    <v-spacer class="mt-4" />
+  </material-card>
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { globalMethod } from "../../../helper/app-helper";
 export default {
   props: {
     title: {
@@ -86,7 +77,7 @@ export default {
     this.fetchMain({ page: 1 });
   },
   methods: {
-    ...mapMutations("block-loader", ["BL_show", "BL_hide"]),
+    ...globalMethod(),
     onPageChange(page) {
       this.fetchMain({ page: page, search: this.searchInput });
     },

@@ -17,16 +17,16 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { globalComputed, globalMethod } from "../../../helper/app-helper";
 
 export default {
   data: () => ({}),
   mounted() {},
   computed: {
-    ...mapGetters("block-loader", ["BL_isShow"]),
+    ...globalComputed(),
   },
   methods: {
-    ...mapMutations("block-loader", ["BL_show", "BL_hide"]),
+    ...globalMethod(),
   },
 };
 </script>
